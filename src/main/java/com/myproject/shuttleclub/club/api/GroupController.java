@@ -1,4 +1,4 @@
-package com.myproject.shuttleclub.group.api;
+package com.myproject.shuttleclub.club.api;
 
 import com.myproject.shuttleclub.common.api.ApiResponse;
 import com.myproject.shuttleclub.common.exception.DomainException;

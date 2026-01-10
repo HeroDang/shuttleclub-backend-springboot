@@ -3,6 +3,8 @@ spring:
     name: shuttleclub
   profiles:
     default: local
+  flyway:
+    enabled: false
 
 server:
   port: 8080

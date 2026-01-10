@@ -1,4 +1,4 @@
-package com.myproject.shuttleclub.group.api;
+package com.myproject.shuttleclub.club.api;
 
 import jakarta.validation.constraints.NotBlank;
 
