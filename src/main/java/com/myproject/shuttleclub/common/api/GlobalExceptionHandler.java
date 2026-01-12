@@ -1,6 +1,6 @@
 package com.myproject.shuttleclub.common.api;
 
-import com.myproject.shuttleclub.common.exception.DomainException;
+
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +9,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import jakarta.validation.ConstraintViolationException;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+
+import com.myproject.shuttleclub.common.error.DomainException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -35,9 +38,10 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(DomainException.class)
-  public ResponseEntity<ApiResponse<Void>> handleDomain(DomainException ex) {
-    var err = new ApiError(ex.code(), ex.getMessage(), List.of());
-    return ResponseEntity.status(ex.status()).body(ApiResponse.error(err, requestId()));
+  public ResponseEntity<ApiError> handleDomain(DomainException ex, HttpServletRequest req) {
+    HttpStatus status = mapStatus(ex.getCode());
+    ApiError body = new ApiError(ex.getCode(), ex.getMessage(), ex.getDetails());
+    return ResponseEntity.status(status).body(body);
   }
 
   @ExceptionHandler(Exception.class)
@@ -50,4 +54,25 @@ public class GlobalExceptionHandler {
     String id = MDC.get("requestId");
     return (id != null && !id.isBlank()) ? id : "unknown";
   }
+  
+  private HttpStatus mapStatus(String code) {
+	    return switch (code) {
+	      case com.myproject.shuttleclub.common.error.ErrorCodes.USER_NOT_FOUND,
+	           com.myproject.shuttleclub.common.error.ErrorCodes.CLUB_NOT_FOUND,
+	           com.myproject.shuttleclub.common.error.ErrorCodes.MEMBERSHIP_NOT_FOUND
+	           -> HttpStatus.NOT_FOUND;
+
+	      case com.myproject.shuttleclub.common.error.ErrorCodes.MEMBERSHIP_ALREADY_EXISTS
+	           -> HttpStatus.CONFLICT;
+
+	      case com.myproject.shuttleclub.common.error.ErrorCodes.FORBIDDEN
+	           -> HttpStatus.FORBIDDEN;
+
+	      case com.myproject.shuttleclub.common.error.ErrorCodes.MEMBERSHIP_NOT_INVITED,
+	           com.myproject.shuttleclub.common.error.ErrorCodes.INVALID_MEMBERSHIP_STATE
+	           -> HttpStatus.BAD_REQUEST;
+
+	      default -> HttpStatus.BAD_REQUEST;
+	    };
+	  }
 }
