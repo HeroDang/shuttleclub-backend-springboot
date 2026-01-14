@@ -56,3 +56,5 @@
 - Enforced business invariants at DB + service layer
 
 - APIs validated via end-to-end manual testing
+
+- Naming decision: “club = group”
