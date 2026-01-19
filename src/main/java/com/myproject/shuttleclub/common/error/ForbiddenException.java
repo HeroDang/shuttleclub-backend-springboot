@@ -7,4 +7,8 @@ public class ForbiddenException extends DomainException {
 	  public ForbiddenException(String message) {
 	    super(ErrorCodes.FORBIDDEN, message);
 	  }
+	  
+	  public ForbiddenException(String errorCode, String message) {
+	        super(errorCode, message);
+	  }
 }

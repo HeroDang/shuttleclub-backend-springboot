@@ -1,6 +1,9 @@
 package com.myproject.shuttleclub.club.application;
 
-import com.myproject.shuttleclub.club.application.dto.*;
+
+import com.myproject.shuttleclub.club.application.dto.ClubDto;
+import com.myproject.shuttleclub.club.application.dto.ClubMemberView;
+import com.myproject.shuttleclub.club.application.dto.MembershipDto;
 import com.myproject.shuttleclub.club.infrastructure.persistence.entity.*;
 import com.myproject.shuttleclub.club.infrastructure.persistence.repository.*;
 import com.myproject.shuttleclub.common.error.ConflictException;

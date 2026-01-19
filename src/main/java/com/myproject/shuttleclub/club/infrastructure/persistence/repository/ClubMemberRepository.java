@@ -1,10 +1,16 @@
 package com.myproject.shuttleclub.club.infrastructure.persistence.repository;
 
 
-import com.myproject.shuttleclub.club.infrastructure.persistence.entity.*;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import com.myproject.shuttleclub.club.infrastructure.persistence.entity.ClubMemberEntity;
+import com.myproject.shuttleclub.club.infrastructure.persistence.entity.ClubRole;
+import com.myproject.shuttleclub.club.infrastructure.persistence.entity.MembershipStatus;
+
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -47,4 +53,42 @@ public interface ClubMemberRepository extends JpaRepository<ClubMemberEntity, UU
           u.displayName asc
     """)
     List<ClubMemberEntity> findMembersWithUser(UUID clubId);
+    
+    boolean existsByClubIdAndUserIdAndStatus(UUID clubId, UUID userId, MembershipStatus status);
+
+    boolean existsByClubIdAndUserIdAndStatusAndRoleIn(
+        UUID clubId,
+        UUID userId,
+        MembershipStatus status,
+        java.util.Collection<ClubRole> roles
+    );
+    
+    @Query("""
+    	      select (count(m) > 0)
+    	      from ClubMemberEntity m
+    	      where m.club.id = :clubId
+    	        and m.user.id = :userId
+    	        and m.status = :status
+    	      """)
+    	  boolean existsMember(
+    	      @Param("clubId") UUID clubId,
+    	      @Param("userId") UUID userId,
+    	      @Param("status") MembershipStatus status
+    	  );
+
+    @Query("""
+    	      select (count(m) > 0)
+    	      from ClubMemberEntity m
+    	      where m.club.id = :clubId
+    	        and m.user.id = :userId
+    	        and m.status = :status
+    	        and m.role in :roles
+    	      """)
+    	  boolean existsMemberWithRoles(
+    	      @Param("clubId") UUID clubId,
+    	      @Param("userId") UUID userId,
+    	      @Param("status") MembershipStatus status,
+    	      @Param("roles") Collection<ClubRole> roles
+    	  );
+    
 }
